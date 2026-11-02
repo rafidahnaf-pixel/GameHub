@@ -5,6 +5,7 @@
 (function () {
     const user = JSON.parse(localStorage.getItem('user'));
     const isAdmin = user && user.role && user.role.toLowerCase() === 'admin';
+    const isLoggedIn = !!user && !!user.id;
 
     // Detect path: root vs pages folder
     const isInPages = window.location.pathname.includes('/pages/');
@@ -71,17 +72,28 @@
                 <i data-lucide="bell"></i> <span>Notification</span>
                 <span class="notif-badge" id="notif-badge" style="display:none; background:#ef4444; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px; margin-left:auto;">0</span>
             </a>
+            ${isLoggedIn ? `
             <a href="${base}pages/profile.html" class="${isActive('profile.html')}">
                 <i data-lucide="user"></i> <span>Profile</span>
             </a>
+            ` : `
+            <a href="${base}pages/login.html" class="${isActive('login.html')}">
+                <i data-lucide="log-in"></i> <span>Login</span>
+            </a>
+            <a href="${base}pages/register.html" class="${isActive('register.html')}">
+                <i data-lucide="user-plus"></i> <span>Sign Up</span>
+            </a>
+            `}
             ${isAdmin ? `
             <a href="${base}pages/admin.html" style="color: #f59e0b;" class="${isActive('admin.html')}">
                 <i data-lucide="shield-alert"></i> <span>Admin Panel</span>
             </a>
             ` : ''}
-            <a href="#" id="sidebar-logout-btn" style="color: #ef4444; margin-top: 25px; border-top: 1px solid #2a4a5a; padding-top: 12px; display: block; width: 100%; text-align: left;">
+            ${isLoggedIn ? `
+            <a href="#" id="sidebar-logout-btn" style="color: #ef4444; margin-top: 25px; border-top: 1px solid #2a4a5a; padding-top: 12px;">
                 <i data-lucide="log-out"></i> <span>Logout</span>
             </a>
+            ` : ''}
         `;
     }
 
@@ -119,7 +131,7 @@
     // Fetch unread notification count untuk user
     if (user && user.id) {
         const fetchNotifCount = () => {
-            const apiBase = window.location.port === '3000' ? '' : (window.location.origin.includes('localhost') ? 'http://localhost:3000' : window.location.origin);
+            const apiBase = 'http://localhost:3000';
         fetch(`${apiBase}/api/notifications/unread-count?user_id=${user.id}`)
                 .then(res => res.json())
                 .then(data => {

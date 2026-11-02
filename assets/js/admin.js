@@ -333,33 +333,25 @@ window.dismissReport = async function(id) {
 window.viewReportPost = async function(postId) {
     console.log('viewReportPost called with postId:', postId, typeof postId);
     try {
-        const res = await fetch(`${API_URL}/api/posts`);
-        console.log('fetch posts status:', res.status);
+        const res = await fetch(`${API_URL}/api/posts/${postId}`);
         if (!res.ok) {
-            showMessage('Gagal memuat daftar postingan.');
+            showMessage('Postingan tidak ditemukan atau sudah dihapus.');
             return;
         }
-        const posts = await res.json();
-        console.log('total posts:', posts.length);
-        console.log('sample post IDs:', posts.slice(0, 5).map(p => p.id));
+        const post = await res.json();
         
-        // Cari post dengan id yang cocok
-        let post = posts.find(p => p.id === postId);
-        if (!post) {
-            post = posts.find(p => p.id == postId); // loose comparison
-        }
-        if (!post) {
-            // Coba cari dengan parseInt
-            const numericId = parseInt(postId);
-            post = posts.find(p => parseInt(p.id) === numericId);
-        }
-        
-        if (!post) {
-            showMessage('Postingan tidak ditemukan (ID: ' + postId + ').');
-            return;
-        }
-
         console.log('found post:', post);
+
+        let report = null;
+        try {
+            const reportsRes = await fetch(`${API_URL}/api/reports`);
+            const reports = await reportsRes.json();
+            if (Array.isArray(reports)) {
+                report = reports.find(r => String(r.post_id) === String(postId)) || null;
+            }
+        } catch (reportErr) {
+            console.error('Error memuat laporan:', reportErr);
+        }
 
         const postImageSrc = post.post_image 
             ? (post.post_image.startsWith('http://') || post.post_image.startsWith('https://') ? post.post_image : `${API_URL}${post.post_image}`)
@@ -376,10 +368,20 @@ window.viewReportPost = async function(postId) {
                 </div>
                 <div style="margin-bottom:12px;">
                     <div style="font-size:12px;color:#818cf8;">@${post.username || 'user'} • ${post.game_title || 'Game'}</div>
-                    <div style="font-size:16px;font-weight:600;color:#fff;margin-top:6px;">${post.content || '-'}</div>
+                    <div style="margin-top:6px;"><span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;text-transform:uppercase;background:#FE7F2D;color:#fff;">${post.status || 'Playing'}</span></div>
+                    <div style="font-size:16px;font-weight:600;color:#fff;margin-top:10px;white-space:pre-wrap;">${post.content || '-'}</div>
                 </div>
                 ${postImageSrc ? `<img src="${postImageSrc}" style="width:100%;border-radius:8px;margin-top:12px;" alt="Post image" onerror="this.style.display='none'">` : ''}
                 <div style="margin-top:16px;font-size:12px;color:#94a3b8;">Likes: ${post.total_likes || 0}</div>
+                ${report ? `
+                <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.1);">
+                    <h4 style="margin:0 0 8px;font-size:14px;color:#818cf8;">Laporan Terkait</h4>
+                    <div style="font-size:12px;color:#94a3b8;">Pelapor: <b style="color:#fff;">@${report.reporter_name}</b></div>
+                    <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Alasan: <b style="color:#fff;">${report.reason}</b></div>
+                    ${report.description ? `<div style="font-size:12px;color:#94a3b8;margin-top:4px;">Detail: ${report.description}</div>` : ''}
+                    <div style="font-size:12px;color:#94a3b8;margin-top:4px;">Status: <b style="color:#fff;">${report.status || 'pending'}</b></div>
+                </div>
+                ` : ''}
                 <div style="display:flex;justify-content:flex-end;margin-top:16px;">
                     <button onclick="this.closest('.modal-overlay').remove()" style="padding:8px 16px;background:#ef4444;color:#fff;border:none;border-radius:6px;cursor:pointer;">Tutup</button>
                 </div>

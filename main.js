@@ -2,7 +2,7 @@
 // GAME LOG - FRONTEND SCRIPT (main.js)
 // ==========================================
 
-const API_URL = window.location.port === '3000' ? '' : (window.location.origin.includes('localhost') ? 'http://localhost:3000' : window.location.origin);
+const API_URL = window.location.origin;
 let activePostId = null;
 
 // 1. Check Status Login User
@@ -85,6 +85,30 @@ function showToast(message) {
     }, 2500);
 }
 
+// Scroll ke postingan tertentu berdasarkan hash di URL (misal: #post-123)
+function scrollToPostFromHash() {
+    const hash = window.location.hash;
+    if (!hash || !hash.startsWith('#post-')) return;
+
+    const postId = hash.replace('#post-', '');
+    const postEl = document.getElementById('post-' + postId);
+
+    if (postEl) {
+        postEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Tandai postingan secara visual (highlight sementara)
+        postEl.style.border = '2px solid #818cf8';
+        setTimeout(() => { postEl.style.border = ''; }, 2500);
+    } else {
+        // Post tidak ditemukan (misal sudah dihapus)
+        showToast('Postingan tidak ditemukan.');
+    }
+}
+
+// Support perubahan hash (misal saat user edit/paste link di address bar)
+window.addEventListener('hashchange', () => {
+    scrollToPostFromHash();
+});
+
 // 3. Fetch Games List ke Select Form
 async function fetchGamesSelect() {
     const gameSelect = document.getElementById('post-game-id');
@@ -162,16 +186,8 @@ async function fetchPosts() {
         renderPostsToUI(posts, userLikes);
 
         // Scroll ke postingan spesifik jika URL memiliki hash #post-<id>
-        const hash = window.location.hash;
-        if (hash && hash.startsWith('#post-')) {
-            const postId = hash.replace('#post-', '');
-            const postEl = document.getElementById('post-' + postId);
-            if (postEl) {
-                postEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Tandai postingan secara visual (highlight sementara)
-                postEl.style.border = '2px solid #818cf8';
-                setTimeout(() => { postEl.style.border = ''; }, 2500);
-            }
+        if (window.location.hash && window.location.hash.startsWith('#post-')) {
+            scrollToPostFromHash();
         }
     } catch (error) {
         console.error('❌ Gagal konek ke server backend:', error);

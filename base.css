@@ -295,6 +295,13 @@ body.admin-mode .btn-delete {
         height: 20px;
     }
 
+    .sidebar a img {
+        width: 18px !important;
+        height: 18px !important;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
     .sidebar a span {
         display: block;
         font-size: 9px;
@@ -302,6 +309,13 @@ body.admin-mode .btn-delete {
 
     .sidebar a:hover {
         transform: none;
+    }
+
+    .sidebar a#sidebar-logout-btn {
+        margin-top: 0 !important;
+        border-top: none !important;
+        padding-top: 6px !important;
+        width: auto !important;
     }
 
     .main-content {

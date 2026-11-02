@@ -1,6 +1,6 @@
 lucide.createIcons();
 
-const API_URL = window.location.port === '3000' ? '' : (window.location.origin.includes('localhost') ? 'http://localhost:3000' : window.location.origin);
+const API_URL = 'http://localhost:3000';
 const user = JSON.parse(localStorage.getItem('user'));
 
 // Jika belum login, alihkan otomatis ke login.html

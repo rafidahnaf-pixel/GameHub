@@ -1,4 +1,4 @@
-const API_URL = window.location.port === '3000' ? '' : (window.location.origin.includes('localhost') ? 'http://localhost:3000' : window.location.origin);
+const API_URL = 'http://localhost:3000';
 
 // Helper untuk API call dengan retry
 async function apiFetch(url, options = {}, retries = 3) {

@@ -347,6 +347,39 @@ app.get('/api/posts', (req, res) => {
     });
 });
 
+// Fetch Detail Single Postingan (by ID) - untuk halaman admin / validasi laporan
+app.get('/api/posts/:id', (req, res) => {
+    const postId = req.params.id;
+
+    const query = `
+        SELECT 
+            posts.id,
+            posts.user_id,
+            posts.content,
+            posts.status,
+            posts.post_image,
+            posts.created_at,
+            users.username,
+            users.name,
+            users.avatar AS user_avatar,
+            games.title AS game_title,
+            games.cover_url AS game_cover,
+            COALESCE(COUNT(likes.id), 0) AS total_likes
+        FROM posts
+        JOIN users ON posts.user_id = users.id
+        JOIN games ON posts.game_id = games.id
+        LEFT JOIN likes ON posts.id = likes.post_id
+        WHERE posts.id = ?
+        GROUP BY posts.id, posts.user_id, users.username, users.name, users.avatar, games.title, games.cover_url, posts.created_at
+    `;
+
+    db.query(query, [postId], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!results || results.length === 0) return res.status(404).json({ message: 'Postingan tidak ditemukan!' });
+        res.json(results[0]);
+    });
+});
+
 // Create Post
 app.post('/api/posts', upload.single('image'), (req, res) => {
     const { user_id, game_id, content, status } = req.body;
@@ -578,7 +611,7 @@ app.post('/api/reports', (req, res) => {
 // Ambil semua reports (untuk admin)
 app.get('/api/reports', (req, res) => {
     const query = `
-        SELECT reports.id, reports.reason, reports.description, reports.created_at, reports.status,
+        SELECT reports.id, reports.post_id, reports.reason, reports.description, reports.created_at, reports.status,
                reporter.username AS reporter_name, 
                poster.username AS poster_name,
                posts.content AS post_content

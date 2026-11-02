@@ -489,6 +489,11 @@
         font-size: 13px;
     }
 
+    .welcome-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
     .post-cta-card {
         flex-direction: column;
         gap: 10px;
