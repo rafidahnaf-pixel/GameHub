@@ -25,8 +25,23 @@
                 <h2>Track your games.<br>Share your progress.</h2>
                 <p>Buat akun GameHub dan simpan semua progress game kamu dalam satu tempat.</p>
             </div>
-            <div class="info-image" style="margin-top: 30px;">
-                <img src="../uploads/preview.png" alt="GameHub" style="width:100%;max-width:500px;border-radius:12px;opacity:0.8;">
+            <div class="info-image">
+                <div class="info-slideshow" aria-label="Preview GameHub">
+                    <div class="slide active">
+                        <img src="../assets/img/auth/slide1.jpg" alt="GameHub preview 1">
+                    </div>
+                    <div class="slide">
+                        <img src="../assets/img/auth/slide2.jpg" alt="GameHub preview 2">
+                    </div>
+                    <div class="slide">
+                        <img src="../assets/img/auth/slide3.jpg" alt="GameHub preview 3">
+                    </div>
+                    <div class="slideshow-dots">
+                        <button type="button" class="dot active" data-slide="0" aria-label="Slide 1"></button>
+                        <button type="button" class="dot" data-slide="1" aria-label="Slide 2"></button>
+                        <button type="button" class="dot" data-slide="2" aria-label="Slide 3"></button>
+                    </div>
+                </div>
             </div>
 
             <div class="info-footer">
@@ -182,5 +197,6 @@
 
         });
     </script>
+    <script src="../assets/js/auth-slideshow.js"></script>
 </body>
 </html>
