@@ -167,7 +167,13 @@ async function fetchPosts() {
 
     try {
         const response = await fetch(`${API_URL}/api/posts`);
+        if (!response.ok) {
+            throw new Error(`Server merespons ${response.status}`);
+        }
         const posts = await response.json();
+        if (!Array.isArray(posts)) {
+            throw new Error(posts?.message || posts?.error || 'Format data postingan tidak valid');
+        }
 
         const user = JSON.parse(localStorage.getItem('user'));
         let userLikes = [];

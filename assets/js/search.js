@@ -72,7 +72,8 @@ async function loadSearchData() {
 
         const res = await fetch(`${API_URL}/api/posts`);
         if (res.ok) {
-            allPosts = await res.json();
+            const data = await res.json();
+            allPosts = Array.isArray(data) ? data : [];
             filterAndRenderPosts();
         } else {
             container.innerHTML = '<p style="color: #ef4444; text-align: center;">Gagal memuat postingan.</p>';
