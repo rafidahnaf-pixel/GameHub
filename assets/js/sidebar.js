@@ -131,7 +131,7 @@
     // Fetch unread notification count untuk user
     if (user && user.id) {
         const fetchNotifCount = () => {
-            const apiBase = 'http://localhost:3000';
+            const apiBase = window.location.origin;
         fetch(`${apiBase}/api/notifications/unread-count?user_id=${user.id}`)
                 .then(res => res.json())
                 .then(data => {

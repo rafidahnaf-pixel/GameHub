@@ -24,11 +24,16 @@ function renderPagination(containerId, totalItems, perPage, currentPage, onPageC
         container.innerHTML = '';
         return;
     }
-    let html = '';
+
+    container.innerHTML = '';
     for (let i = 1; i <= totalPages; i++) {
-        html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="onPageChange(${i})">${i}</button>`;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+        btn.textContent = i;
+        btn.addEventListener('click', () => onPageChange(i));
+        container.appendChild(btn);
     }
-    container.innerHTML = html;
 }
 
 function paginateArray(array, page, perPage) {
